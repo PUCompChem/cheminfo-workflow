@@ -15,5 +15,5 @@ for file_path in glob.glob(os.path.join(upstream['convert_xlsx_to_csv']['convert
 
     df_clean = df.dropna()
 
-    output_filename = 'clean_' + os.path.basename(file_path)
+    output_filename = os.path.basename(file_path)
     df_clean.to_csv(os.path.join(product['cleaned_csv'], output_filename), index=False)

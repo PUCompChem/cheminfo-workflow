@@ -1,9 +1,9 @@
 # + tags=["parameters"]
 upstream = ['clean_missing_values']
 product = None
-column_of_interest = None  # <- specify column name to extract
+value = None
 name = None
-dist_matrix_type = None  # e.g., 'euclidean', 'cosine', etc.
+dist_matrix_type = None
 
 # -
 
@@ -32,11 +32,11 @@ for path in glob.glob(os.path.join(upstream['clean_missing_values']['cleaned_csv
     df = pd.read_csv(path)
     filename = os.path.splitext(os.path.basename(path))[0]
 
-    names = df['SMILES'].values
-    values = df[[column_of_interest]].values
+    names = df[name].values
+    values = df[[value]].values
 
     distance_matrix = calculate_distance_matrix(values, dist_matrix_type)
 
     dist_df = pd.DataFrame(distance_matrix, index=names, columns=names)
-    output_path = os.path.join(product['calculated_dist_matrix'], f"dist_matrix_of_{filename.replace('clean_', '')}.csv")
+    output_path = os.path.join(product['calculated_dist_matrix'], f"dist_matrix_of_{filename}.csv")
     dist_df.to_csv(output_path, index=True)
