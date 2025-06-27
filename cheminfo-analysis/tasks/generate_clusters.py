@@ -1,10 +1,9 @@
 # + tags=["parameters"]
-upstream = ['clean_missing_values']
+upstream = ['insert_ids']
 product = None
 dist_matrix_type = None
 clusters = None
 method = None
-name = None
 value = None
 
 # -
@@ -72,24 +71,13 @@ def clusters_by_silhouette(features) -> int:
 
     return optimal_clusters
 
-input_folder = upstream['clean_missing_values']['cleaned_csv']
-csv_files = glob.glob(os.path.join(input_folder, '*.csv'))
-
 os.makedirs(product['generated_clusters'], exist_ok=True)
 
-for csv_path in csv_files:
+for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(csv_path)
 
-    if name not in df.columns or value not in df.columns:
-        raise KeyError(f"Missing required columns in {csv_path}")
-
-    features = df[[value]].dropna()
-    raw_labels = df.loc[features.index, name].astype(str)
-    short_labels = [f"ID_{i+1}" for i in range(len(raw_labels))]
-    labels = short_labels
-
-    label_map_df = pd.DataFrame({"ID": short_labels, "Original_Name": raw_labels})
-    label_map_df.to_csv(os.path.join(product['generated_clusters'], f'label_mapping_{os.path.splitext(os.path.basename(csv_path))[0]}.csv'), index=False)
+    features = df[[value]]
+    labels = df['ID'].values
 
     distance_matrix = pdist(features.values, metric=dist_matrix_type)
     linked = linkage(distance_matrix, method=method)
