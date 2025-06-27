@@ -10,3 +10,4 @@ dependencies:
   - openpyxl
   - scipy
   - scikit-learn
+  - matplotlib
