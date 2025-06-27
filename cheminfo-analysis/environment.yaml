@@ -1,0 +1,12 @@
+name: cheminfo_analysis
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python==3.10
+  - pandas
+  - numpy
+  - ploomber
+  - openpyxl
+  - scipy
+  - scikit-learn
