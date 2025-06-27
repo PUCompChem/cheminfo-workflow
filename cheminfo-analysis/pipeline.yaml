@@ -1,0 +1,21 @@
+tasks:
+
+  - source: tasks/convert_xlsx_to_csv.py
+    product:
+      nb: '{{folder_output}}/notebooks/convert_xlsx_to_csv.ipynb'
+      converted_xlsx_to_csv: '{{folder_output}}/converted_xlsx_to_csv/'
+    params:
+      folder_input: '{{folder_input}}'
+
+  - source: tasks/clean_missing_values.py
+    product:
+      nb: '{{folder_output}}/notebooks/clean_missing_values.ipynb'
+      cleaned_csv: '{{folder_output}}/cleaned_csv/'
+
+  - source: tasks/calc_dist_matrix.py
+    product:
+      nb: '{{folder_output}}/notebooks/calc_dist_matrix.ipynb'
+      calculated_dist_matrix: '{{folder_output}}/calculated_dist_matrix/'
+    params:
+      dist_matrix_type: '{{dist_matrix_type}}'
+      column_of_interest: "{{column_of_interest}}"
