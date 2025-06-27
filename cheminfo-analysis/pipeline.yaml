@@ -18,4 +18,16 @@ tasks:
       calculated_dist_matrix: '{{folder_output}}/calculated_dist_matrix/'
     params:
       dist_matrix_type: '{{dist_matrix_type}}'
-      column_of_interest: "{{column_of_interest}}"
+      value: "{{value}}"
+      name: "{{name}}"
+  
+  - source: tasks/generate_clusters.py
+    product:
+      nb: '{{folder_output}}/notebooks/generate_clusters.ipynb'
+      generated_clusters: '{{folder_output}}/generated_clusters/'
+    params:
+      dist_matrix_type: '{{dist_matrix_type}}'
+      clusters: '{{clusters}}'
+      method: '{{method}}'
+      value: "{{value}}"
+      name: "{{name}}"
