@@ -1,7 +1,7 @@
 # + tags=["parameters"]
 upstream = None
-product = None
 folder_input = None
+product = None
 
 # -
 

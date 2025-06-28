@@ -1,7 +1,7 @@
 # + tags=["parameters"]
 upstream = ['insert_ids']
 product = None
-value = None
+target_column = None
 
 # -
 
@@ -79,15 +79,15 @@ for csv_path in csv_files:
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    if 'ID' not in df.columns or value not in df.columns:
-        raise KeyError(f"'ID' and '{value}' columns are required in {csv_path}")
+    if 'ID' not in df.columns or target_column not in df.columns:
+        raise KeyError(f"'ID' and '{target_column}' columns are required in {csv_path}")
 
-    df_filtered = df[['ID', value]].dropna()
+    df_filtered = df[['ID', target_column]].dropna()
     if df_filtered.shape[0] < 3:
         continue
 
-    repeated_data = pd.concat([df_filtered[[value]]] * 3, axis=1)
-    repeated_data.columns = [f"{value}_{i}" for i in range(3)]
+    repeated_data = pd.concat([df_filtered[[target_column]]] * 3, axis=1)
+    repeated_data.columns = [f"{target_column}_{i}" for i in range(3)]
 
     X_scaled = StandardScaler().fit_transform(repeated_data)
 

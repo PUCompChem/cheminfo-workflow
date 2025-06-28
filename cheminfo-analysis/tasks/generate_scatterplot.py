@@ -1,7 +1,7 @@
 # + tags=["parameters"]
 upstream = ['insert_ids']
 product = None
-variables = None
+list_column = None
 
 # -
 
@@ -48,10 +48,10 @@ for file_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], 
     df = pd.read_csv(file_path)
     file_name = os.path.splitext(os.path.basename(file_path))[0]
 
-    if not variables or len(variables) < 2:
+    if not list_column or len(list_column) < 2:
         continue
 
-    for i in range(len(variables)):
-        for j in range(len(variables)):
+    for i in range(len(list_column)):
+        for j in range(len(list_column)):
             if i != j:
-                plot_correlation(df, variables[i], variables[j], file_name)
+                plot_correlation(df, list_column[i], list_column[j], file_name)

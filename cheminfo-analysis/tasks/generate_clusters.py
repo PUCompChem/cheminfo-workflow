@@ -3,8 +3,8 @@ upstream = ['insert_ids']
 product = None
 dist_matrix_type = None
 clusters = None
-method = None
-value = None
+clust_method = None
+target_column = None
 
 # -
 
@@ -63,15 +63,15 @@ for csv_path in csv_files:
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    df_filtered = df[['ID', value]].dropna()
+    df_filtered = df[['ID', target_column]].dropna()
     if df_filtered.shape[0] < 3:
         continue
 
-    features = df_filtered[[value]].values
+    features = df_filtered[[target_column]].values
     labels = df_filtered['ID'].values
 
     dist_matrix = pdist(features, metric=dist_matrix_type)
-    linked = linkage(dist_matrix, method=method)
+    linked = linkage(dist_matrix, method=clust_method)
 
     if clusters == 'elbow':
         num_clusters = clusters_by_elbow(features)
@@ -87,7 +87,7 @@ for csv_path in csv_files:
     fig = ff.create_dendrogram(
         features,
         labels=labels,
-        linkagefun=lambda x: linkage(x, method=method),
+        linkagefun=lambda x: linkage(x, method=clust_method),
         color_threshold=threshold - 0.1,
         orientation='bottom'
     )

@@ -23,8 +23,7 @@ tasks:
       calculated_dist_matrix: '{{folder_output}}/calculated_dist_matrix/'
     params:
       dist_matrix_type: '{{dist_matrix_type}}'
-      value: "{{value}}"
-      name: "{{name}}"
+      target_column: "{{target_column}}"
   
   - source: tasks/generate_clusters.py
     product:
@@ -33,26 +32,26 @@ tasks:
     params:
       dist_matrix_type: '{{dist_matrix_type}}'
       clusters: '{{clusters}}'
-      method: '{{method}}'
-      value: "{{value}}"
+      clust_method: '{{clust_method}}'
+      target_column: "{{target_column}}"
 
   - source: tasks/generate_histogram.py
     product:
       nb: '{{folder_output}}/notebooks/generate_histogram.ipynb'
       generated_histograms: '{{folder_output}}/generated_histograms/'
     params:
-      value: "{{value}}"
+      target_column: "{{target_column}}"
 
   - source: tasks/generate_PCA.py
     product:
       nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
       generated_PCA: '{{folder_output}}/generated_PCA/'
     params:
-      value: "{{value}}"
+      target_column: "{{target_column}}"
 
   - source: tasks/generate_scatterplot.py
     product:
       nb: '{{folder_output}}/notebooks/generate_scatterplot.ipynb'
       generated_scatterplot: '{{folder_output}}/generated_scatterplot/'
     params:
-      variables: "{{variables}}"
+      list_column: "{{list_column}}"

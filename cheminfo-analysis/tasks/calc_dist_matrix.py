@@ -1,8 +1,7 @@
 # + tags=["parameters"]
-upstream = ['clean_missing_values']
+upstream = ['insert_ids']
 product = None
-value = None
-name = None
+target_column = None
 dist_matrix_type = None
 
 # -
@@ -28,12 +27,15 @@ def calculate_distance_matrix(data_array: np.ndarray, dist_type: str) -> np.ndar
 
 os.makedirs(product['calculated_dist_matrix'], exist_ok=True)
 
-for path in glob.glob(os.path.join(upstream['clean_missing_values']['cleaned_csv'], '*.csv')):
+for path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(path)
     filename = os.path.splitext(os.path.basename(path))[0]
 
-    names = df[name].values
-    values = df[[value]].values
+    if 'ID' not in df.columns or target_column not in df.columns:
+        continue
+
+    names = df['ID'].astype(str).values
+    values = df[[target_column]].values
 
     distance_matrix = calculate_distance_matrix(values, dist_matrix_type)
 
