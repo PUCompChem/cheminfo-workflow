@@ -11,3 +11,7 @@ dependencies:
   - scipy
   - scikit-learn
   - matplotlib
+  - plotly
+  - pip
+  - pip:
+    - kaleido
