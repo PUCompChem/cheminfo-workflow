@@ -42,3 +42,10 @@ tasks:
       generated_histograms: '{{folder_output}}/generated_histograms/'
     params:
       value: "{{value}}"
+
+  - source: tasks/generate_PCA.py
+    product:
+      nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
+      generated_PCA: '{{folder_output}}/generated_PCA/'
+    params:
+      value: "{{value}}"
