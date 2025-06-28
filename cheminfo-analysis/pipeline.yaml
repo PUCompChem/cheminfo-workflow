@@ -49,3 +49,10 @@ tasks:
       generated_PCA: '{{folder_output}}/generated_PCA/'
     params:
       value: "{{value}}"
+
+  - source: tasks/generate_scatterplot.py
+    product:
+      nb: '{{folder_output}}/notebooks/generate_scatterplot.ipynb'
+      generated_scatterplot: '{{folder_output}}/generated_scatterplot/'
+    params:
+      variables: "{{variables}}"
