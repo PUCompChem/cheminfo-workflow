@@ -8,128 +8,95 @@ value = None
 
 # -
 
-import pandas as pd
 import os
 import glob
+import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
+import plotly.figure_factory as ff
+import plotly.io as pio
+from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import pdist
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
-from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import AgglomerativeClustering, KMeans
 
-def find_threshold_for_n_clusters(Z, num_clusters) -> np.float64:
+input_folder = upstream['insert_ids']['inserted_ids']
+csv_files = glob.glob(os.path.join(input_folder, '*.csv'))
+
+output_folder = product['generated_clusters']
+os.makedirs(output_folder, exist_ok=True)
+
+def find_threshold_for_n_clusters(Z, num_clusters) -> float:
     distances = Z[:, 2]
     max_distance = distances.max()
-
     for threshold in np.linspace(0, max_distance, 1000):
         clusters = fcluster(Z, t=threshold, criterion='distance')
         if len(np.unique(clusters)) == num_clusters:
             return threshold
-
     return max_distance
 
 def clusters_by_elbow(features) -> int:
-    cluster_range = range(2, min(len(features), 21))
     inertia_values = []
-
+    cluster_range = range(2, min(len(features), 21))
     for n_clusters in cluster_range:
         if len(features) < n_clusters:
             break
-        kmeans = KMeans(n_clusters=n_clusters, random_state=0)
-        kmeans.fit(features)
+        kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(features)
         inertia_values.append(kmeans.inertia_)
-
     if len(inertia_values) < 2:
         return 2
-
-    first_derivative = np.diff(inertia_values)
-    second_derivative = np.diff(first_derivative)
+    second_derivative = np.diff(np.diff(inertia_values))
     elbow_index = np.argmin(second_derivative)
-    optimal_clusters = cluster_range[elbow_index]
-
-    return optimal_clusters
+    return cluster_range[elbow_index]
 
 def clusters_by_silhouette(features) -> int:
     silhouette_scores = []
     cluster_range = range(2, min(len(features), 21))
-
     for n_clusters in cluster_range:
         if len(features) < n_clusters:
             break
-        agglomerative = AgglomerativeClustering(n_clusters=n_clusters)
-        cluster_labels = agglomerative.fit_predict(features)
-        silhouette_avg = silhouette_score(features, cluster_labels)
-        silhouette_scores.append(silhouette_avg)
+        model = AgglomerativeClustering(n_clusters=n_clusters).fit(features)
+        score = silhouette_score(features, model.labels_)
+        silhouette_scores.append(score)
+    return cluster_range[np.argmax(silhouette_scores)] if silhouette_scores else 2
 
-    if not silhouette_scores:
-        return 2
-
-    max_index = np.argmax(silhouette_scores)
-    optimal_clusters = cluster_range[max_index]
-
-    return optimal_clusters
-
-os.makedirs(product['generated_clusters'], exist_ok=True)
-
-for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
+for csv_path in csv_files:
     df = pd.read_csv(csv_path)
+    filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    features = df[[value]]
-    labels = df['ID'].values
+    df_filtered = df[['ID', value]].dropna()
+    if df_filtered.shape[0] < 3:
+        continue
 
-    distance_matrix = pdist(features.values, metric=dist_matrix_type)
-    linked = linkage(distance_matrix, method=method)
+    features = df_filtered[[value]].values
+    labels = df_filtered['ID'].values
+
+    dist_matrix = pdist(features, metric=dist_matrix_type)
+    linked = linkage(dist_matrix, method=method)
 
     if clusters == 'elbow':
         num_clusters = clusters_by_elbow(features)
     elif clusters == 'silhouette':
         num_clusters = clusters_by_silhouette(features)
-    elif isinstance(clusters, int) and 2 <= clusters <= min(len(features), 20):
+    elif isinstance(clusters, int):
         num_clusters = clusters
     else:
-        raise ValueError("Invalid value for 'clusters'. Must be 'elbow', 'silhouette', or an integer between 2 and min(n_samples, 20).")
-
-    cluster_labels = fcluster(linked, num_clusters, criterion='maxclust')
-
-    silhouette_avg = silhouette_score(features, cluster_labels, metric=dist_matrix_type)
-    davies_bouldin_avg = davies_bouldin_score(features, cluster_labels)
-    calinski_harabasz_avg = calinski_harabasz_score(features, cluster_labels)
+        raise ValueError("Invalid 'clusters' value")
 
     threshold = find_threshold_for_n_clusters(linked, num_clusters)
 
-    fig, ax = plt.subplots(figsize=(16, 9))
-    dendrogram(
-        linked,
+    fig = ff.create_dendrogram(
+        features,
         labels=labels,
+        linkagefun=lambda x: linkage(x, method=method),
         color_threshold=threshold - 0.1,
-        above_threshold_color='black',
-        orientation='top',
-        show_contracted=True,
-        leaf_font_size=6
+        orientation='bottom'
     )
 
-    ax.set_title('Hierarchical Clustering Dendrogram')
-    ax.set_xlabel('IDs')
-    ax.set_ylabel('Distance')
-    ax.tick_params(axis='y', rotation=0, labelsize=8)
-    plt.tight_layout()
-
-    textstr = '\n'.join((
-        f'Silhouette Score: {silhouette_avg:.4f}',
-        f'Davies-Bouldin Score: {davies_bouldin_avg:.4f}',
-        f'Calinski-Harabasz Score: {calinski_harabasz_avg:.4f}'
-    ))
-
-    ax.text(
-        0.98, 0.96, textstr, transform=ax.transAxes,
-        fontsize=12, verticalalignment='top',
-        horizontalalignment='right',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.5)
+    fig.update_layout(
+        width=1500,
+        height=700,
+        title=f"Cluster Dendrogram - {filename}"
     )
 
-    filename = os.path.splitext(os.path.basename(csv_path))[0]
-
-    fig.savefig(os.path.join(product['generated_clusters'], f'cluster_dendrogram_{filename}.png'), bbox_inches='tight')
-    plt.close(fig)
+    output_file = os.path.join(output_folder, f'dendrogram_{filename}.html')
+    pio.write_html(fig, file=output_file, auto_open=False)
