@@ -22,6 +22,7 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
 
     plt.figure(figsize=(10, 6))
     plt.hist(values, bins=20, edgecolor='black')
+    plt.gca().yaxis.set_major_locator(plt.MaxNLocator(integer=True))
     plt.xlabel(f'{target_column} Value', fontweight='bold')
     plt.ylabel('Frequency', fontweight='bold')
     plt.title(f'Distribution of {target_column}', fontweight='bold')
