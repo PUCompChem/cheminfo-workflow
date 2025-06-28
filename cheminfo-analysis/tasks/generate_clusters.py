@@ -19,12 +19,6 @@ from scipy.spatial.distance import pdist
 from sklearn.metrics import silhouette_score
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
-input_folder = upstream['insert_ids']['inserted_ids']
-csv_files = glob.glob(os.path.join(input_folder, '*.csv'))
-
-output_folder = product['generated_clusters']
-os.makedirs(output_folder, exist_ok=True)
-
 def find_threshold_for_n_clusters(Z, num_clusters) -> float:
     distances = Z[:, 2]
     max_distance = distances.max()
@@ -59,7 +53,10 @@ def clusters_by_silhouette(features) -> int:
         silhouette_scores.append(score)
     return cluster_range[np.argmax(silhouette_scores)] if silhouette_scores else 2
 
-for csv_path in csv_files:
+output_folder = product['generated_clusters']
+os.makedirs(output_folder, exist_ok=True)
+
+for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 

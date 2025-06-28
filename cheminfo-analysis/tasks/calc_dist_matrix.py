@@ -13,7 +13,6 @@ import glob
 from scipy.spatial.distance import pdist, squareform
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 def calculate_distance_matrix(data_array: np.ndarray, dist_type: str) -> np.ndarray:
     if dist_type in ['euclidean', 'cityblock']:
         return squareform(pdist(data_array, metric=dist_type))

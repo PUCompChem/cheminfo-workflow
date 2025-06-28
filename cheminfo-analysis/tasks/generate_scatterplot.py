@@ -10,19 +10,11 @@ import glob
 import pandas as pd
 import plotly.express as px
 
-os.makedirs(product['generated_scatterplot'], exist_ok=True)
-
-
 def get_name(var) -> str:
     return var
 
-
 def plot_correlation(df: pd.DataFrame, base_var: str, other_var: str, file_name: str) -> None:
     if base_var not in df.columns or other_var not in df.columns:
-        return
-
-    df = df.dropna(subset=[base_var, other_var])
-    if df.empty:
         return
 
     df['x'] = df[base_var].round(5)
@@ -43,6 +35,7 @@ def plot_correlation(df: pd.DataFrame, base_var: str, other_var: str, file_name:
     out_html = os.path.join(product['generated_scatterplot'], f"{file_name}_{base_var}_vs_{other_var}.html")
     fig.write_html(out_html, include_plotlyjs='cdn')
 
+os.makedirs(product['generated_scatterplot'], exist_ok=True)
 
 for file_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(file_path)

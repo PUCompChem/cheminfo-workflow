@@ -13,12 +13,6 @@ import plotly.io as pio
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-input_folder = upstream['insert_ids']['inserted_ids']
-csv_files = glob.glob(os.path.join(input_folder, '*.csv'))
-
-output_folder = product['generated_PCA']
-os.makedirs(output_folder, exist_ok=True)
-
 def generate_2d_pca(data_standardized, ids, filename):
     pca = PCA(n_components=2)
     principal_components = pca.fit_transform(data_standardized)
@@ -75,12 +69,12 @@ def generate_3d_pca(data_standardized, ids, filename):
 
     pio.write_html(fig, file=os.path.join(output_folder, f'pca_3d_{filename}.html'), auto_open=False)
 
-for csv_path in csv_files:
+output_folder = product['generated_PCA']
+os.makedirs(output_folder, exist_ok=True)
+
+for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
-
-    if 'ID' not in df.columns or target_column not in df.columns:
-        raise KeyError(f"'ID' and '{target_column}' columns are required in {csv_path}")
 
     df_filtered = df[['ID', target_column]].dropna()
     if df_filtered.shape[0] < 3:
