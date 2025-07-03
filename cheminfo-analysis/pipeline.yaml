@@ -1,9 +1,9 @@
 tasks:
 
-  - source: tasks/convert_xlsx_to_csv.py
+  - source: tasks/process_data.py
     product:
-      nb: '{{folder_output}}/notebooks/convert_xlsx_to_csv.ipynb'
-      converted_xlsx_to_csv: '{{folder_output}}/converted_xlsx_to_csv/'
+      nb: '{{folder_output}}/notebooks/process_data.ipynb'
+      processed_data: '{{folder_output}}/processed_data/'
     params:
       folder_input: '{{folder_input}}'
 
@@ -24,28 +24,11 @@ tasks:
     params:
       dist_matrix_type: '{{dist_matrix_type}}'
       target_column: "{{target_column}}"
-  
-  - source: tasks/generate_clusters.py
-    product:
-      nb: '{{folder_output}}/notebooks/generate_clusters.ipynb'
-      generated_clusters: '{{folder_output}}/generated_clusters/'
-    params:
-      dist_matrix_type: '{{dist_matrix_type}}'
-      clusters: '{{clusters}}'
-      clust_method: '{{clust_method}}'
-      target_column: "{{target_column}}"
 
   - source: tasks/generate_histogram.py
     product:
       nb: '{{folder_output}}/notebooks/generate_histogram.ipynb'
       generated_histograms: '{{folder_output}}/generated_histograms/'
-    params:
-      target_column: "{{target_column}}"
-
-  - source: tasks/generate_PCA.py
-    product:
-      nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
-      generated_PCA: '{{folder_output}}/generated_PCA/'
     params:
       target_column: "{{target_column}}"
 
@@ -55,3 +38,20 @@ tasks:
       generated_scatterplot: '{{folder_output}}/generated_scatterplot/'
     params:
       list_column: "{{list_column}}"
+
+  #- source: tasks/generate_clusters.py
+  #  product:
+  #    nb: '{{folder_output}}/notebooks/generate_clusters.ipynb'
+  #    generated_clusters: '{{folder_output}}/generated_clusters/'
+  #  params:
+  #    dist_matrix_type: '{{dist_matrix_type}}'
+  #    clusters: '{{clusters}}'
+  #    clust_method: '{{clust_method}}'
+  #    target_column: "{{target_column}}"
+
+  #- source: tasks/generate_PCA.py
+  #  product:
+  #    nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
+  #    generated_PCA: '{{folder_output}}/generated_PCA/'
+  #  params:
+  #    target_column: "{{target_column}}"
