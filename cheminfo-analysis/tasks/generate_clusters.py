@@ -4,7 +4,7 @@ product = None
 dist_matrix_type = None
 clusters = None
 clust_method = None
-target_column = None
+list_column = None
 
 # -
 
@@ -60,11 +60,16 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    df_filtered = df[['ID', target_column]].dropna()
+    try:
+        df_filtered = df[['ID'] + list_column].dropna()
+    except KeyError as e:
+        print(f"Missing expected column(s) in {filename}: {e}")
+        continue
+
     if df_filtered.shape[0] < 3:
         continue
 
-    features = df_filtered[[target_column]].values
+    features = df_filtered[list_column].values
     labels = df_filtered['ID'].values
 
     dist_matrix = pdist(features, metric=dist_matrix_type)
@@ -92,7 +97,11 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
     fig.update_layout(
         width=1500,
         height=700,
-        title=f"Cluster Dendrogram - {filename}"
+        title=f"Cluster Dendrogram - {filename}<br><sub>Features used: {', '.join(list_column)}</sub>",
+        xaxis_showticklabels=True,
+        yaxis_showticklabels=True,
+        xaxis=dict(showline=False, mirror=False),
+        yaxis=dict(showline=True, mirror=False)
     )
 
     output_file = os.path.join(output_folder, f'dendrogram_{filename}.html')
