@@ -39,19 +39,19 @@ tasks:
     params:
       list_column: "{{list_column}}"
 
-  #- source: tasks/generate_clusters.py
-  #  product:
-  #    nb: '{{folder_output}}/notebooks/generate_clusters.ipynb'
-  #    generated_clusters: '{{folder_output}}/generated_clusters/'
-  #  params:
-  #    dist_matrix_type: '{{dist_matrix_type}}'
-  #    clusters: '{{clusters}}'
-  #    clust_method: '{{clust_method}}'
-  #    target_column: "{{target_column}}"
+  - source: tasks/generate_clusters.py
+    product:
+      nb: '{{folder_output}}/notebooks/generate_clusters.ipynb'
+      generated_clusters: '{{folder_output}}/generated_clusters/'
+    params:
+      dist_matrix_type: '{{dist_matrix_type}}'
+      clusters: '{{clusters}}'
+      clust_method: '{{clust_method}}'
+      list_column: "{{list_column}}"
 
-  #- source: tasks/generate_PCA.py
-  #  product:
-  #    nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
-  #    generated_PCA: '{{folder_output}}/generated_PCA/'
-  #  params:
-  #    target_column: "{{target_column}}"
+  - source: tasks/generate_PCA.py
+    product:
+      nb: '{{folder_output}}/notebooks/generate_PCA.ipynb'
+      generated_PCA: '{{folder_output}}/generated_PCA/'
+    params:
+      list_column: "{{list_column}}"
