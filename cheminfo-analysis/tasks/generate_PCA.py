@@ -1,7 +1,7 @@
 # + tags=["parameters"]
 upstream = ['insert_ids']
 product = None
-target_column = None
+list_column = None
 
 # -
 
@@ -13,7 +13,7 @@ import plotly.io as pio
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-def generate_2d_pca(data_standardized, ids, filename):
+def generate_2d_pca(data_standardized, ids, filename, features_used):
     pca = PCA(n_components=2)
     principal_components = pca.fit_transform(data_standardized)
 
@@ -31,16 +31,15 @@ def generate_2d_pca(data_standardized, ids, filename):
         x="PC1",
         y="PC2",
         hover_name="All_IDs",
-        title=f"2D PCA - {filename}",
+        title=f"2D PCA - {filename}<br><sub>Features used: {', '.join(features_used)}</sub>",
         labels={"PC1": "Principal Component 1", "PC2": "Principal Component 2"}
     )
 
     fig.update_traces(marker=dict(size=5, opacity=0.7), textposition="top center")
-    fig.update_layout(margin=dict(l=0, r=0, b=0, t=30))
-
+    fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
     pio.write_html(fig, file=os.path.join(output_folder, f'pca_2d_{filename}.html'), auto_open=False)
 
-def generate_3d_pca(data_standardized, ids, filename):
+def generate_3d_pca(data_standardized, ids, filename, features_used):
     pca = PCA(n_components=3)
     principal_components = pca.fit_transform(data_standardized)
 
@@ -60,13 +59,12 @@ def generate_3d_pca(data_standardized, ids, filename):
         y="PC2",
         z="PC3",
         hover_name="All_IDs",
-        title=f"3D PCA - {filename}",
+        title=f"3D PCA - {filename}<br><sub>Features used: {', '.join(features_used)}</sub>",
         labels={"PC1": "Principal Component 1", "PC2": "Principal Component 2", "PC3": "Principal Component 3"}
     )
 
     fig.update_traces(marker=dict(size=5, opacity=0.7), textposition="top center")
-    fig.update_layout(margin=dict(l=0, r=0, b=0, t=30))
-
+    fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
     pio.write_html(fig, file=os.path.join(output_folder, f'pca_3d_{filename}.html'), auto_open=False)
 
 output_folder = product['generated_PCA']
@@ -76,14 +74,17 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    df_filtered = df[['ID', target_column]].dropna()
+    try:
+        df_filtered = df[['ID'] + list_column].dropna()
+    except KeyError as e:
+        print(f"Missing expected column(s) in {filename}: {e}")
+        continue
+
     if df_filtered.shape[0] < 3:
         continue
 
-    repeated_data = pd.concat([df_filtered[[target_column]]] * 3, axis=1)
-    repeated_data.columns = [f"{target_column}_{i}" for i in range(3)]
+    features = df_filtered[list_column].values
+    X_scaled = StandardScaler().fit_transform(features)
 
-    X_scaled = StandardScaler().fit_transform(repeated_data)
-
-    generate_2d_pca(X_scaled, df_filtered['ID'].values, filename)
-    generate_3d_pca(X_scaled, df_filtered['ID'].values, filename)
+    generate_2d_pca(X_scaled, df_filtered['ID'].values, filename, list_column)
+    generate_3d_pca(X_scaled, df_filtered['ID'].values, filename, list_column)
