@@ -11,6 +11,10 @@ tasks:
     product:
       nb: '{{folder_output}}/notebooks/clean_missing_values.ipynb'
       cleaned_csv: '{{folder_output}}/cleaned_csv/'
+    params:
+      id_column: '{{id_column}}'
+      target_column: "{{target_column}}"
+      list_column: "{{list_column}}"
 
   - source: tasks/insert_ids.py
     product:
