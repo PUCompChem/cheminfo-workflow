@@ -53,21 +53,16 @@ def clusters_by_silhouette(features) -> int:
         silhouette_scores.append(score)
     return cluster_range[np.argmax(silhouette_scores)] if silhouette_scores else 2
 
-output_folder = product['generated_clusters']
-os.makedirs(output_folder, exist_ok=True)
+os.makedirs(product['generated_clusters'], exist_ok=True)
 
 for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    try:
-        df_filtered = df[['ID'] + list_column].dropna()
-    except KeyError as e:
-        print(f"Missing expected column(s) in {filename}: {e}")
+    if not list_column or len(list_column) < 2:
         continue
 
-    if df_filtered.shape[0] < 3:
-        continue
+    df_filtered = df[['ID'] + list_column]
 
     features = df_filtered[list_column].values
     labels = df_filtered['ID'].values
@@ -104,5 +99,5 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
         yaxis=dict(showline=True, mirror=False)
     )
 
-    output_file = os.path.join(output_folder, f'dendrogram_{filename}.html')
+    output_file = os.path.join(product['generated_clusters'], f'dendrogram_{filename}.html')
     pio.write_html(fig, file=output_file, auto_open=False)

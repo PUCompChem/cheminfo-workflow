@@ -31,13 +31,13 @@ def generate_2d_pca(data_standardized, ids, filename, features_used):
         x="PC1",
         y="PC2",
         hover_name="All_IDs",
-        title=f"2D PCA - {filename}<br><sub>Features used: {', '.join(features_used)}</sub>",
+        title=f"2D PCA - {filename}",
         labels={"PC1": "Principal Component 1", "PC2": "Principal Component 2"}
     )
 
     fig.update_traces(marker=dict(size=5, opacity=0.7), textposition="top center")
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
-    pio.write_html(fig, file=os.path.join(output_folder, f'pca_2d_{filename}.html'), auto_open=False)
+    pio.write_html(fig, file=os.path.join(product['generated_PCA'], f'pca_2d_{filename}.html'), auto_open=False)
 
 
 def generate_3d_pca(data_standardized, ids, filename, features_used):
@@ -60,33 +60,31 @@ def generate_3d_pca(data_standardized, ids, filename, features_used):
         y="PC2",
         z="PC3",
         hover_name="All_IDs",
-        title=f"3D PCA - {filename}<br><sub>Features used: {', '.join(features_used)}</sub>",
+        title=f"3D PCA - {filename}",
         labels={"PC1": "Principal Component 1", "PC2": "Principal Component 2", "PC3": "Principal Component 3"}
     )
 
     fig.update_traces(marker=dict(size=5, opacity=0.7), textposition="top center")
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
-    pio.write_html(fig, file=os.path.join(output_folder, f'pca_3d_{filename}.html'), auto_open=False)
+    pio.write_html(fig, file=os.path.join(product['generated_PCA'], f'pca_3d_{filename}.html'), auto_open=False)
 
-
-output_folder = product['generated_PCA']
-os.makedirs(output_folder, exist_ok=True)
+os.makedirs(product['generated_PCA'], exist_ok=True)
 
 for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.csv')):
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    try:
-        df_filtered = df[['ID'] + list_column].dropna()
-    except KeyError as e:
-        print(f"Missing expected column(s) in {filename}: {e}")
+    if not list_column or len(list_column) < 2:
         continue
 
-    if df_filtered.shape[0] < 3:
-        continue
+    df_filtered = df[['ID'] + list_column]
 
     features = df_filtered[list_column].values
     X_scaled = StandardScaler().fit_transform(features)
 
     generate_2d_pca(X_scaled, df_filtered['ID'].values, filename, list_column)
+
+    if len(list_column) < 3:
+        continue
+
     generate_3d_pca(X_scaled, df_filtered['ID'].values, filename, list_column)
