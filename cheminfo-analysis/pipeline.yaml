@@ -16,6 +16,8 @@ tasks:
     product:
       nb: '{{folder_output}}/notebooks/insert_ids.ipynb'
       inserted_ids: '{{folder_output}}/inserted_ids/'
+    params:
+      id_column: '{{id_column}}'
 
   - source: tasks/calc_dist_matrix.py
     product:

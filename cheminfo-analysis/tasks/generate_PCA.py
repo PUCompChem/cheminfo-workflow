@@ -2,7 +2,6 @@
 upstream = ['insert_ids']
 product = None
 list_column = None
-
 # -
 
 import os
@@ -13,6 +12,7 @@ import plotly.io as pio
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+
 def generate_2d_pca(data_standardized, ids, filename, features_used):
     pca = PCA(n_components=2)
     principal_components = pca.fit_transform(data_standardized)
@@ -20,7 +20,7 @@ def generate_2d_pca(data_standardized, ids, filename, features_used):
     pca_df = pd.DataFrame({
         "PC1": principal_components[:, 0],
         "PC2": principal_components[:, 1],
-        "ID": ids
+        "ID": ids.astype(str)
     })
 
     grouped = pca_df.groupby(['PC1', 'PC2'])['ID'].apply(lambda x: '<br>'.join(sorted(x))).reset_index()
@@ -39,6 +39,7 @@ def generate_2d_pca(data_standardized, ids, filename, features_used):
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
     pio.write_html(fig, file=os.path.join(output_folder, f'pca_2d_{filename}.html'), auto_open=False)
 
+
 def generate_3d_pca(data_standardized, ids, filename, features_used):
     pca = PCA(n_components=3)
     principal_components = pca.fit_transform(data_standardized)
@@ -47,7 +48,7 @@ def generate_3d_pca(data_standardized, ids, filename, features_used):
         "PC1": principal_components[:, 0],
         "PC2": principal_components[:, 1],
         "PC3": principal_components[:, 2],
-        "ID": ids
+        "ID": ids.astype(str)
     })
 
     grouped = pca_df.groupby(['PC1', 'PC2', 'PC3'])['ID'].apply(lambda x: '<br>'.join(sorted(x))).reset_index()
@@ -66,6 +67,7 @@ def generate_3d_pca(data_standardized, ids, filename, features_used):
     fig.update_traces(marker=dict(size=5, opacity=0.7), textposition="top center")
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=50))
     pio.write_html(fig, file=os.path.join(output_folder, f'pca_3d_{filename}.html'), auto_open=False)
+
 
 output_folder = product['generated_PCA']
 os.makedirs(output_folder, exist_ok=True)
