@@ -4,7 +4,7 @@ A Ploomber-based workflow for analyzing chemical and structural data from `.xlsx
 
 ## Overview
 
-This workflow supports clustering of chemical property data using a configurable set of parameters. It allows users to select specific columns and apply a clustering method (e.g., Ward, single linkage) with various distance metrics. The goal is to enable insightful groupings of chemical compounds or polymers based on selected descriptors.
+This workflow is designed to support researchers in analyzing molecular datasets by automating data cleaning, statistical exploration, and clustering. It processes structured tabular data, identifies and removes incomplete entries, assigns unique identifiers, and performs various analyses including distance matrix calculation, histogram generation, scatterplots, and PCA. The workflow produces both visual and numerical outputs to help uncover patterns, relationships, and outliers in the data.
 
 ---
 
