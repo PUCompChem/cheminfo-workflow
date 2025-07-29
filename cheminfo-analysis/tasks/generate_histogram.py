@@ -27,10 +27,10 @@ for csv_path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '
     df = pd.read_csv(csv_path)
     filename = os.path.splitext(os.path.basename(csv_path))[0]
 
-    if target_column not in df.columns:
-        raise KeyError(f"Column '{target_column}' is required in {csv_path}")
+    if not target_column:
+        continue
 
-    values = df[target_column].dropna().astype(float)
+    values = df[target_column].astype(float)
 
     plt.figure(figsize=(10, 6))
     plt.hist(values, bins=20, edgecolor='black')

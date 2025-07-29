@@ -30,7 +30,7 @@ for path in glob.glob(os.path.join(upstream['insert_ids']['inserted_ids'], '*.cs
     df = pd.read_csv(path)
     filename = os.path.splitext(os.path.basename(path))[0]
 
-    if 'ID' not in df.columns or target_column not in df.columns:
+    if 'ID' not in df.columns or not target_column:
         continue
 
     names = df['ID'].astype(str).values
