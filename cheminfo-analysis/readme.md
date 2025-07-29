@@ -19,6 +19,7 @@ All parameters are defined in `env.yaml`, but can also be overridden from the te
 | `clust_method`     | `str`        | Clustering algorithm to be used. Options: `"ward"`, `"single"`, `"complete"`, `"average"`, `"centroid"`, `"median"`, `"weighted"`. | `"ward"`      |
 | `target_column`    | `str`        | Name of a specific column from the CSV to focus on for analysis.                               | `null`        |
 | `list_column`      | `list`       | List of column names (features) from the CSV file to include in the clustering analysis.       | `null`        |
+| `id_column`        | `str`        | Name of the column that contains unique identifiers for each row.                              | `null`        |
 
 ---
 
