@@ -1,5 +1,5 @@
 # + tags=["parameters"]
-upstream = ['process_data']
+upstream = ['data_conversion']
 product = None
 target_column = None
 id_column = ''
@@ -12,7 +12,7 @@ import pandas as pd
 
 os.makedirs(product['cleaned_csv'], exist_ok=True)
 
-for file_path in glob.glob(os.path.join(upstream['process_data']['processed_data'], '*.csv')):
+for file_path in glob.glob(os.path.join(upstream['data_conversion']['converted_data'], '*.csv')):
     df = pd.read_csv(file_path)
 
     target_cols = set(list_column or [])

@@ -1,9 +1,9 @@
 tasks:
 
-  - source: tasks/process_data.py
+  - source: tasks/data_conversion.py
     product:
       nb: '{{folder_output}}/notebooks/process_data.ipynb'
-      processed_data: '{{folder_output}}/processed_data/'
+      converted_data: '{{folder_output}}/converted_data/'
     params:
       folder_input: '{{folder_input}}'
 
